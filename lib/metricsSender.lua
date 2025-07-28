@@ -1,5 +1,6 @@
 local component = require("component")
-local internet = component.isAvailable("internet") and component.internet or error("Internet card not found")
+local hasInternet = component.isAvailable("internet")
+local internet = hasInternet and component.internet or nil
 
 -- Конфигурация подключения к InfluxDB
 local config = {
@@ -37,6 +38,10 @@ local function sendMetric(measurement, value, extraTags)
     config.host, config.port, config.db
   )
 
+  if not hasInternet then
+    return false, "internet card not available"
+  end
+
   local handle, err = internet.request(url, payload)
   if not handle then
     return false, err
@@ -53,5 +58,6 @@ end
 -- API модуля
 return {
   send      = sendMetric,
-  setConfig = function(cfg) for k,v in pairs(cfg) do config[k] = v end end
+  setConfig = function(cfg) for k,v in pairs(cfg) do config[k] = v end end,
+  available = hasInternet
 }
