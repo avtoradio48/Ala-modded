@@ -15,7 +15,7 @@ local files = {
     {
         url = "https://raw.githubusercontent.com/Awl-S/Monitoring-Ala/refs/heads/main/lib/sgui.lua",
         path = "/lib/sgui.lua"
-    }
+    },
         {
         url = "https://raw.githubusercontent.com/avtoradio48/Ala-modded/refs/heads/main/lib/metricsSender.lua",
         path = "/lib/metricsSender.lua"
