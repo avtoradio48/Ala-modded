@@ -9,7 +9,7 @@ local filesystem = require("filesystem")
 -- Список файлов для скачивания
 local files = {
     {
-        url = "https://raw.githubusercontent.com/Awl-S/Monitoring-Ala/refs/heads/main/main.lua",
+        url = "https://raw.githubusercontent.com/avtoradio48/Ala-modded/refs/heads/main/main.lua",
         path = "/home/main.lua"
     },
     {
