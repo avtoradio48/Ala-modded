@@ -13,7 +13,7 @@ local files = {
         path = "/home/main.lua"
     },
     {
-        url = "https://raw.githubusercontent.com/Awl-S/Monitoring-Ala/refs/heads/main/lib/sgui.lua",
+        url = "https://raw.githubusercontent.com/avtoradio48/Ala-modded/refs/heads/main/lib/sgui.lua",
         path = "/lib/sgui.lua"
     },
         {
