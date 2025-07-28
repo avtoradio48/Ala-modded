@@ -6,7 +6,8 @@ local thread = require("thread")
 local filesystem = require("filesystem")
 
 local gui = require("sgui")
-
+local metrics = require("metricsSender")
+metrics.setConfig({ host = "grafana.yourdomain.ru", db = "oc_metrics" })
 local MEController = component.isAvailable("me_controller") and component.me_controller or nil
 local gpu = component.isAvailable("gpu") and component.gpu or nil
 local chatBox = component.isAvailable("chat_box") and component.chat_box or nil
@@ -172,6 +173,9 @@ local function renderMEController(controllerData)
     gui.text(statsX1, statsY, "&a" .. controllerData.stats.idle .. " &f/&4 " .. controllerData.stats.busy)
     gui.text(statsX2, statsY, "&9 Всего: &a" .. controllerData.total)
 end
+####
+metrics.send("ae2_busy", stats.busy, {module="ae2"})
+metrics.send("ae2_idle", stats.idle, {module="ae2"})
 
 local playersDataFile = "/home/data/playersData.txt"
 
@@ -370,6 +374,9 @@ local function renderPlayersDisplay(processedData)
     local columnWidth = math.floor(innerBounds.width / maxColumns)
     
     local maxPlayers = maxColumns * maxRowsPerColumn
+    ####
+    local count = #playerList
+     metrics.send("players_online", count, {module="players"})
     
     -- Очищаем область отображения
     for i = 1, maxPlayers do
@@ -642,6 +649,7 @@ local function renderFluxNetwork(stats)
 
     gui.text(3, 7, "&aМаксимальный вход:&2 " .. energy(stats.maxInput / 4))
 end
+metrics.send("flux_energy_stored", stats.energy_stored, {module="flux"})
 
 local REACTOR_FILE         = "/home/data/reactorInfo.txt"
 local REACTOR_UPDATE_INT   = 2
