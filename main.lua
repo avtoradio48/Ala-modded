@@ -4,11 +4,11 @@ local term      = require("term")
 local os        = require("os")
 
 -- Monitoring libraries
-local sgui     = require("lib.sgui")
-local ae2      = require("lib.ae2")
-local fluxnet  = require("lib.flux")
-local reactors = require("lib.reactors")
-local players  = require("lib.players")
+local sgui     = require("sgui")
+local ae2      = require("ae2")
+local fluxnet  = require("flux")
+local reactors = require("reactors")
+local players  = require("players")
 
 -- InfluxDB client
 local influx = require("lib.influx")
