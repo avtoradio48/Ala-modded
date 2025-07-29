@@ -17,9 +17,25 @@ local files = {
         path = "/lib/sgui.lua"
     },
         {
-        url = "https://raw.githubusercontent.com/avtoradio48/Ala-modded/refs/heads/main/lib/metricsSender.lua",
-        path = "/lib/metricsSender.lua"
-    }
+        url = "https://github.com/avtoradio48/Ala-modded/raw/refs/heads/main/lib/ae2.lua",
+        path = "/lib/ae2.lua"
+    },
+    {
+        url = "https://github.com/avtoradio48/Ala-modded/raw/refs/heads/main/lib/flux.lua",
+        path = "/lib/flux.lua"
+    },
+    {
+        url = "https://github.com/avtoradio48/Ala-modded/raw/refs/heads/main/lib/influx.lua",
+        path = "/lib/influx.lua"
+    },
+    {
+        url = "https://github.com/avtoradio48/Ala-modded/raw/refs/heads/main/lib/players.lua",
+        path = "/lib/players.lua"
+    },
+    {
+        url = "https://github.com/avtoradio48/Ala-modded/raw/refs/heads/main/lib/reactors.lua",
+        path = "/lib/reactors.lua"
+    },
 }
 
 -- Функция для создания папки, если она не существует
