@@ -3,7 +3,6 @@ local event     = require("event")
 local term      = require("term")
 local os        = require("os")
 
--- External libraries
 local sgui     = require("sgui")
 local ae2      = require("ae2")
 local fluxnet  = require("flux")
@@ -11,7 +10,6 @@ local reactors = require("reactors")
 local players  = require("players")
 local influx   = require("influx")
 
--- Configuration
 local UPDATE_INTERVAL = 5 -- seconds between updates
 
 -- Setup screen and GPU for 160×50 terminal
@@ -29,16 +27,14 @@ sgui.createPanel("Players",      81, 12, 80, 10)
 
 -- Main loop
 while true do
-  -- AE2 CPU metrics
-  local cpus = ae2.getCPUs()
-  for _, cpu in ipairs(cpus) do
-    influx.send(
-      "ae2_cpu",
-      { cpu = cpu.name },
-      { busy = cpu.busy, total = cpu.total, stored = cpu.stored }
-    )
-  end
-  sgui.drawPanel("AE2 CPUs", cpus)
+  -- AE2 CPU stats
+  local stats = ae2.getCPUStats()
+  influx.send(
+    "ae2_cpu",
+    {},
+    { busy = stats.busy, idle = stats.idle, total = stats.total }
+  )
+  sgui.drawPanel("AE2 CPUs", stats)
 
   -- Flux Network metrics
   local fluxData = fluxnet.getStatus()
@@ -51,11 +47,11 @@ while true do
 
   -- Reactor metrics
   local reactorList = reactors.getAll()
-  for _, r in ipairs(reactorList) do
+  for _, reactor in ipairs(reactorList) do
     influx.send(
       "reactor",
-      { reactor = r.id },
-      { temperature = r.temp, power_output = r.output }
+      { reactor = reactor.id },
+      { temperature = reactor.temp, power_output = reactor.output }
     )
   end
   sgui.drawPanel("Reactors", reactorList)
