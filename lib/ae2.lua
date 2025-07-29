@@ -1,11 +1,15 @@
+-- lib/ae2.lua
+-- AE2 CPU statistics library using the MEController component
+
 local component = require("component")
-local me = component.me_controller
+local MEController = component.isAvailable("me_controller") and component.me_controller or nil
 
 local ae2 = {}
 
--- Retrieve AE2 CPU statistics from the me_controller
+-- Retrieve AE2 CPU statistics from the MEController
 function ae2.getCPUs()
   local cpus = {}
+  local me = MEController
   if not me then
     return cpus
   end
