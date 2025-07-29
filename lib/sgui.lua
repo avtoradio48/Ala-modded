@@ -1,6 +1,6 @@
 local component = require("component")
 local term      = require("term")
-local gpu       = component.gpu
+local gpu = require("component").gpu
 
 local sgui = {}
 local panels = {}
