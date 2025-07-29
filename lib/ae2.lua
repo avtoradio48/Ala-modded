@@ -1,55 +1,48 @@
+-- lib/ae2.lua
+-- AE2 statistics library using MEController.getCpus()
+
 local component = require("component")
-local me = component.isAvailable("me_controller") and component.me_controller or nil
+local MEController = component.isAvailable("me_controller") and component.me_controller or nil
 
 local ae2 = {}
 
--- Retrieve AE2 CPU statistics from the MEController
-function ae2.getCPUs()
-  local cpus = {}
-  if not me then
-    return cpus
+-- Retrieve detailed MEController statistics
+-- Returns table: { processors = { {id, busy, status}, ... }, stats = { idle, busy }, total = number }
+function ae2.getMEControllerStats()
+  if not MEController then
+    return { processors = {}, stats = { idle = 0, busy = 0 }, total = 0 }
+  end
+  
+  -- Attempt to get raw CPU list
+  local ok, processors = pcall(function() return MEController.getCpus() end)
+  if not ok or type(processors) ~= "table" then
+    return { processors = {}, stats = { idle = 0, busy = 0 }, total = 0 }
   end
 
-  -- Check available methods
-  local hasCount = type(me.getCPUCount) == "function"
-  local hasInfo  = type(me.getCPUInfo)  == "function"
-  if not hasInfo then
-    return cpus
-  end
+  local cpuStats = { idle = 0, busy = 0 }
+  local processorsData = {}
 
-  if hasCount then
-    -- Use getCPUCount if available
-    local ok, count = pcall(me.getCPUCount, me)
-    if ok and type(count) == "number" then
-      for i = 0, count - 1 do
-        local ok2, info = pcall(me.getCPUInfo, me, i)
-        if ok2 and type(info) == "table" then
-          table.insert(cpus, {
-            name   = info.name   or ("cpu" .. i),
-            busy   = info.busy   or 0,
-            total  = info.total  or 0,
-            stored = info.stored or 0,
-          })
-        end
-      end
-    end
-  else
-    -- Fallback: iterate until getCPUInfo fails
-    local i = 0
-    while true do
-      local ok2, info = pcall(me.getCPUInfo, me, i)
-      if not ok2 or type(info) ~= "table" then break end
-      table.insert(cpus, {
-        name   = info.name   or ("cpu" .. i),
-        busy   = info.busy   or 0,
-        total  = info.total  or 0,
-        stored = info.stored or 0,
-      })
-      i = i + 1
+  for i = 1, #processors do
+    local entry = processors[i]
+    local isWorking = entry.busy or false
+    local status = isWorking and "В работе" or "Свободен"
+    table.insert(processorsData, {
+      id     = i,
+      busy   = isWorking,
+      status = status
+    })
+    if isWorking then
+      cpuStats.busy = cpuStats.busy + 1
+    else
+      cpuStats.idle = cpuStats.idle + 1
     end
   end
 
-  return cpus
+  return {
+    processors = processorsData,
+    stats      = cpuStats,
+    total      = #processors
+  }
 end
 
 return ae2
