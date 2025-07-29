@@ -11,7 +11,7 @@ local reactors = require("reactors")
 local players  = require("players")
 
 -- InfluxDB client
-local influx = require("lib.influx")
+local influx = require("influx")
 
 -- Configuration
 local UPDATE_INTERVAL = 5 -- seconds between updates
