@@ -35,7 +35,7 @@ local files = {
     {
         url = "https://github.com/avtoradio48/Ala-modded/raw/refs/heads/main/lib/reactors.lua",
         path = "/lib/reactors.lua"
-    },
+    }
 }
 
 -- Функция для создания папки, если она не существует
