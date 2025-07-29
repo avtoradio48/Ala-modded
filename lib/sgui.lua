@@ -5,17 +5,14 @@ local gpu       = component.gpu
 local sgui = {}
 local panels = {}
 
--- Reset panels
 function sgui.init()
   panels = {}
 end
 
--- Register a panel: title at (x,y) of size w×h
 function sgui.createPanel(title, x, y, w, h)
   panels[title] = { x = x, y = y, w = w, h = h, title = title }
 end
 
--- Draw the panel with its content
 function sgui.drawPanel(title, content)
   local p = panels[title]
   if not p or not gpu then return end
