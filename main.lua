@@ -3,31 +3,29 @@ local event     = require("event")
 local term      = require("term")
 local os        = require("os")
 
--- Monitoring libraries
+-- External libraries
 local sgui     = require("sgui")
 local ae2      = require("ae2")
 local fluxnet  = require("flux")
 local reactors = require("reactors")
 local players  = require("players")
-
--- InfluxDB client
-local influx = require("influx")
+local influx   = require("influx")
 
 -- Configuration
 local UPDATE_INTERVAL = 5 -- seconds between updates
 
--- Setup screen and GPU
+-- Setup screen and GPU for 160×50 terminal
 if component.gpu and component.screen then
-  component.gpu.setResolution(80, 25)
+  component.gpu.setResolution(160, 50)
   term.clear()
 end
 
 -- Initialize GUI panels
 sgui.init()
-sgui.createPanel("AE2 CPUs",     1,  1, 40,  8)
-sgui.createPanel("Flux Network", 1, 10, 40,  8)
-sgui.createPanel("Reactors",     41, 1, 40,  8)
-sgui.createPanel("Players",      41, 10, 40,  8)
+sgui.createPanel("AE2 CPUs",     1,  1, 80, 10)
+sgui.createPanel("Flux Network", 1, 12, 80, 10)
+sgui.createPanel("Reactors",     81, 1, 80, 10)
+sgui.createPanel("Players",      81, 12, 80, 10)
 
 -- Main loop
 while true do
@@ -53,11 +51,11 @@ while true do
 
   -- Reactor metrics
   local reactorList = reactors.getAll()
-  for _, reactor in ipairs(reactorList) do
+  for _, r in ipairs(reactorList) do
     influx.send(
       "reactor",
-      { reactor = reactor.id },
-      { temperature = reactor.temp, power_output = reactor.output }
+      { reactor = r.id },
+      { temperature = r.temp, power_output = r.output }
     )
   end
   sgui.drawPanel("Reactors", reactorList)
