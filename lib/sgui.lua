@@ -1,85 +1,61 @@
--- Author: https://github.com/Awl-S
+local component = require("component")
+local term      = require("term")
+local gpu       = component.gpu
 
-ugui = {}
-local gpu = require("component").gpu
-local unicode = require("unicode")
+local sgui = {}
+local panels = {}
 
-ugui.colors = {
-    ["0"] = 0x333333,
-    ["1"] = 0x0000ff,
-    ["2"] = 0x00ff00,
-    ["3"] = 0x24b3a7,
-    ["4"] = 0xff0000,
-    ["5"] = 0x8b00ff,
-    ["6"] = 0xffa500,
-    ["7"] = 0xbbbbbb,
-    ["8"] = 0x808080,
-    ["9"] = 0x0000ff,
-    ["a"] = 0x66ff66,
-    ["b"] = 0x00ffff,
-    ["c"] = 0xff6347,
-    ["d"] = 0xff00ff,
-    ["e"] = 0xffff00,
-    ["f"] = 0xffffff,
-    ["g"] = 0x00ff00,
-    ["border"] = 0x525FE1,
-}
-
-function ugui.setColor(index)
-    local back = gpu.getForeground()
-    local newColor = ugui.colors[index]
-    if newColor then
-        gpu.setForeground(newColor)
-    elseif index == "r" then
-        gpu.setForeground(back)
-    end
+-- Initialize or reset GUI panels
+function sgui.init()
+  panels = {}
 end
 
-function ugui.text(x, y, text)
-    local n = 0
-    local isColorCode = false
+-- Create a panel with a title at (x, y) of size w x h
+function sgui.createPanel(title, x, y, w, h)
+  panels[title] = { x = x, y = y, w = w, h = h, title = title }
+end
 
-    for i = 1, unicode.len(text) do
-        local char = unicode.sub(text, i, i)
+-- Draw the panel background, border, title and content
+function sgui.drawPanel(title, content)
+  local p = panels[title]
+  if not p or not gpu then return end
+  -- Draw title bar
+  gpu.setBackground(0x336699)
+  gpu.setForeground(0xFFFFFF)
+  gpu.fill(p.x, p.y, p.w, 1, " ")
+  gpu.set(p.x + 1, p.y, p.title)
 
-        if char == "&" then
-            isColorCode = true
-        elseif isColorCode then
-            isColorCode = false
-            if ugui.colors[char] then
-                ugui.setColor(char)
-            end
-        else
-            n = n + 1
-            gpu.set(x + n, y, char)
+  -- Clear panel area
+  gpu.setBackground(0x000000)
+  gpu.setForeground(0xCCCCCC)
+  for i = 1, p.h - 1 do
+    gpu.fill(p.x, p.y + i, p.w, 1, " ")
+  end
+
+  -- Render content depending on data structure
+  if type(content) == "table" then
+    local row = 1
+    if #content > 0 then
+      -- List of items
+      for _, item in ipairs(content) do
+        local line = ""
+        for k, v in pairs(item) do
+          line = line .. k .. ":" .. tostring(v) .. " "
         end
+        gpu.set(p.x + 1, p.y + row, line)
+        row = row + 1
+        if row >= p.h then break end
+      end
+    else
+      -- Single key-value mapping
+      for k, v in pairs(content) do
+        local line = k .. ":" .. tostring(v)
+        gpu.set(p.x + 1, p.y + row, line)
+        row = row + 1
+        if row >= p.h then break end
+      end
     end
+  end
 end
 
-function ugui.drawCube(x, y, width, height, color)
-    local topBorder = "╭" .. string.rep("⎯", width - 2) .. "╮"
-    local middleRow = "│" .. string.rep(" ", width - 2) .. "│"
-    local bottomBorder = "╰" .. string.rep("⎯", width - 2) .. "╯" -- ━
-    gpu.setForeground(color)
-    gpu.set(x, y, topBorder)     -- Draw top border
-    for i = 1, height - 2 do
-        gpu.set(x, y + i, middleRow)     -- Draw middle rows
-    end
-    gpu.set(x, y + height - 1, bottomBorder)     -- Draw bottom border
-end
-
-function ugui.drawMain(nameTable, color, version)
-    local width, height = gpu.getResolution()
-    ugui.drawCube(1, 1, width, height, color)  
-    ugui.text(math.floor((width/2)-unicode.len(nameTable)/2), 1,  nameTable)
-    ugui.text(5, height, "&9[&bAuthor: Stawlie_&9] &bgithub.com/Awl-S/Monitoring-Ala ")
-    vers = "&b[v" .. version .. "]"
-    ugui.text(width-#vers-5, height, vers)
-end
-
-function ugui.drawFrame(x, y, width, height, nameTitle, color)
-    ugui.drawCube(x, y, width, height, color)
-    ugui.text(x+1, y, "[" ..nameTitle .. "]")
-end
-
-return ugui
+return sgui
